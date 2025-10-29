@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QuizLearn Clone</title>
+<style>
+  :root {
+    --bg: #f9f9ff;
+    --card-bg: #ffffff;
+    --primary: #5865f2;
+    --primary-light: #d6dbff;
+    --correct: #4caf50;
+    --incorrect: #e53935;
+    --text: #222;
+    --muted: #666;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  body {
+    font-family: "Inter", "Segoe UI", sans-serif;
+    background: var(--bg);
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #quiz-container {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    animation: fadeIn 0.6s ease;
+  }
+
+  h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--text);
+  }
+
+  .choice {
+    display: block;
+    width: 100%;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    margin: 0.6rem 0;
+    background: var(--primary-light);
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+
+  .choice:hover {
+    background: #c8ceff;
+    transform: translateY(-2px);
+  }
+
+  .correct {
+    background: var(--correct) !important;
+    color: #fff !important;
+  }
+
+  .incorrect {
+    background: var(--incorrect) !important;
+    color: #fff !important;
+  }
+
+  #progress {
+    margin-top: 1rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #complete {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  button:disabled {
+    cursor: default;
+    opacity: 0.9;
+  }
+</style>
+</head>
+<body>
+  <div id="quiz-container">
+    <h1 id="question">Loading...</h1>
+    <div id="choices"></div>
+    <p id="progress"></p>
+  </div>
+
+<script>
+const questions = [
+  {
+    question: "What is the capital of France?",
+    choices: ["Paris", "Madrid", "Rome", "Berlin"],
+    correct: 0
+  },
+  {
+    question: "Which planet is known as the Red Planet?",
+    choices: ["Earth", "Mars", "Venus"],
+    correct: 1
+  },
+  {
+    question: "What does CPU stand for?",
+    choices: ["Central Process Unit", "Central Processing Unit", "Computer Processing Utility"],
+    correct: 1
+  },
+  {
+    question: "2 + 2 × 2 = ?",
+    choices: ["6", "8", "4"],
+    correct: 0
+  }
+];
+
+let current = 0;
+let waitingForNext = false;
+
+const questionEl = document.getElementById('question');
+const choicesEl = document.getElementById('choices');
+const progressEl = document.getElementById('progress');
+
+function showQuestion() {
+  waitingForNext = false;
+  const q = questions[current];
+  questionEl.textContent = q.question;
+  progressEl.textContent = `Question ${current + 1} of ${questions.length}`;
+  choicesEl.innerHTML = '';
+
+  q.choices.forEach((choice, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = choice;
+    btn.classList.add('choice');
+    btn.onclick = () => handleAnswer(btn, index);
+    choicesEl.appendChild(btn);
+  });
+}
+
+function handleAnswer(button, index) {
+  const q = questions[current];
+  const buttons = document.querySelectorAll('.choice');
+
+  if (!waitingForNext) {
+    buttons.forEach(b => b.disabled = true);
+    if (index === q.correct) {
+      button.classList.add('correct');
+    } else {
+      button.classList.add('incorrect');
+      buttons[q.correct].classList.add('correct');
+    }
+    waitingForNext = true;
+  } else {
+    nextQuestion();
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    questionEl.innerHTML = `<span id="complete">🎉 Quiz Complete!</span>`;
+    choicesEl.innerHTML = "";
+    progressEl.textContent = "";
+  }
+}
+
+showQuestion();
+</script>
+</body>
+</html>
