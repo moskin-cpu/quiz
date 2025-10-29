@@ -4,29 +4,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuizLearn Clone</title>
-<link rel="stylesheet" href="style.css">
+<style>
+  body { font-family: sans-serif; text-align: center; padding: 50px; }
+  .hidden { display: none; }
+  button { padding: 10px 20px; margin: 5px; font-size: 18px; cursor: pointer; }
+  .correct { background-color: #4CAF50; color: white; }
+  .incorrect { background-color: #f44336; color: white; }
+</style>
 </head>
 <body>
-  <div id="quiz-container">
-    <div id="start-screen">
-      <h1>Welcome to QuizLearn</h1>
-      <button id="start-btn">Start Quiz</button>
-    </div>
-
-    <div id="quiz-screen" class="hidden">
-      <h1 id="question"></h1>
-      <div id="choices"></div>
-      <p id="progress"></p>
-      <p id="score"></p>
-    </div>
-
-    <div id="end-screen" class="hidden">
-      <h1>🎉 Quiz Complete!</h1>
-      <p id="final-score"></p>
-      <button id="restart-btn">Restart Quiz</button>
-    </div>
+  <div id="start-screen">
+    <h1>Welcome to QuizLearn</h1>
+    <button id="start-btn">Start Quiz</button>
   </div>
 
-<script src="quiz.js"></script>
+  <div id="quiz-screen" class="hidden">
+    <h2 id="question"></h2>
+    <div id="choices"></div>
+    <p id="progress"></p>
+    <p id="score"></p>
+  </div>
+
+  <div id="end-screen" class="hidden">
+    <h1>Quiz Complete!</h1>
+    <p id="final-score"></p>
+    <button id="restart-btn">Restart Quiz</button>
+  </div>
+
+<script>
+const questions = [
+  { q: "Capital of France?", choices: ["Paris", "Madrid", "Rome"], correct: 0 },
+  { q: "Red Planet?", choices: ["Earth", "Mars", "Venus"], correct: 1 },
+  { q: "CPU stands for?", choices: ["Central Process Unit", "Central Processing Unit", "Computer Processing Utility"], correct: 1 },
+  { q: "2 + 2 × 2 = ?", choices: ["6", "8", "4"], correct: 0 }
+];
+
+let current = 0;
+let score = 0;
+let timeout;
+
+const startBtn = document.getElementById('start-btn');
+const restartBtn = document.getElementById('restart-btn');
+const startScreen = document.getElementById('start-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const endScreen = document.getElementById('end-screen');
+const questionEl = document.getElementById('question');
+const choicesEl = document.getElementById('choices');
+const progressEl = document.getElementById('progress');
+const scoreEl = document.getElementById('score');
+const finalScoreEl = document.getElementById('final-score');
+
+startBtn.onclick = startQuiz;
+restartBtn.onclick = startQuiz;
+
+function startQuiz() {
+  startScreen.classList.add('hidden');
+  endScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  current = 0;
+  score = 0;
+  showQuestion();
+}
+
+function showQuestion() {
+  clearTimeout(timeout);
+  const q = questions[current];
+  questionEl.textContent = q.q;
+  progressEl.textContent = `Question ${current + 1} of ${questions.length}`;
+  scoreEl.textContent = `Score: ${score}`;
+  choicesEl.innerHTML = "";
+
+  q.choices.forEach((choice, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = choice;
+    btn.onclick = () => handleAnswer(i);
+    choicesEl.appendChild(btn);
+  });
+}
+
+function handleAnswer(selected) {
+  const q = questions[current];
+  const buttons = choicesEl.querySelectorAll("button");
+
+  // Show feedback
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add("correct");
+    if (i === selected && selected !== q.correct) btn.classList.add("incorrect");
+  });
+
+  if (selected === q.correct) score++;
+  scoreEl.textContent = `Score: ${score}`;
+
+  // Auto-advance after 3 seconds
+  timeout = setTimeout(() => {
+    current++;
+    if (current < questions.length) {
+      showQuestion();
+    } else {
+      quizScreen.classList.add("hidden");
+      endScreen.classList.remove("hidden");
+      finalScoreEl.textContent = `You scored ${score} out of ${questions.length}`;
+    }
+  }, 3000);
+}
+</script>
 </body>
 </html>
