@@ -1,4 +1,26 @@
-let questions = [];
+let questions = [
+  {
+    question: "What is the capital of France?",
+    choices: ["Paris", "Madrid", "Rome", "Berlin"],
+    correct: 0
+  },
+  {
+    question: "Which planet is known as the Red Planet?",
+    choices: ["Earth", "Mars", "Venus"],
+    correct: 1
+  },
+  {
+    question: "What does CPU stand for?",
+    choices: ["Central Process Unit", "Central Processing Unit", "Computer Processing Utility"],
+    correct: 1
+  },
+  {
+    question: "2 + 2 × 2 = ?",
+    choices: ["6", "8", "4"],
+    correct: 0
+  }
+];
+
 let current = 0;
 let waitingForNext = false;
 let score = 0;
@@ -18,7 +40,7 @@ const finalScoreEl = document.getElementById('final-score');
 startBtn.addEventListener('click', () => {
   startScreen.classList.add('hidden');
   quizScreen.classList.remove('hidden');
-  loadQuestions();
+  showQuestion();
 });
 
 restartBtn.addEventListener('click', () => {
@@ -28,14 +50,6 @@ restartBtn.addEventListener('click', () => {
   quizScreen.classList.remove('hidden');
   showQuestion();
 });
-
-// Load questions from JSON file
-async function loadQuestions() {
-  // You can replace this URL with your own JSON file in the repo
-  const res = await fetch('questions.json');
-  questions = await res.json();
-  showQuestion();
-}
 
 function showQuestion() {
   waitingForNext = false;
