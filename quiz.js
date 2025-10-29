@@ -31,6 +31,7 @@ const startScreen = document.getElementById('start-screen');
 const quizScreen = document.getElementById('quiz-screen');
 const endScreen = document.getElementById('end-screen');
 
+const quizContainer = document.getElementById('quiz-container');
 const questionEl = document.getElementById('question');
 const choicesEl = document.getElementById('choices');
 const progressEl = document.getElementById('progress');
@@ -69,34 +70,28 @@ function showQuestion() {
 }
 
 function handleAnswer(button, index) {
+  if (waitingForNext) return; // Ignore extra clicks here
+
   const q = questions[current];
   const buttons = document.querySelectorAll('.choice');
 
-  if (!waitingForNext) {
-    // First click → show feedback
-    buttons.forEach(b => b.disabled = true);
-    if (index === q.correct) {
-      button.classList.add('correct');
-      score++;
-    } else {
-      button.classList.add('incorrect');
-      buttons[q.correct].classList.add('correct');
-    }
-    waitingForNext = true;
-
-    // Add event listeners to all buttons for moving to next
-    buttons.forEach(b => b.addEventListener('click', nextQuestionAfterClick));
+  // Show feedback
+  buttons.forEach(b => b.disabled = true);
+  if (index === q.correct) {
+    button.classList.add('correct');
+    score++;
+  } else {
+    button.classList.add('incorrect');
+    buttons[q.correct].classList.add('correct');
   }
+
+  waitingForNext = true;
+
+  // Listen for **any click anywhere in quiz-screen** to go to next
+  quizScreen.addEventListener('click', nextQuestionAfterClick, { once: true });
 }
 
 function nextQuestionAfterClick() {
-  const buttons = document.querySelectorAll('.choice');
-  // Remove the extra click listeners to avoid stacking
-  buttons.forEach(b => b.removeEventListener('click', nextQuestionAfterClick));
-  nextQuestion();
-}
-
-function nextQuestion() {
   current++;
   if (current < questions.length) {
     showQuestion();
