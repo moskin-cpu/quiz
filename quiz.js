@@ -1,24 +1,8 @@
 let questions = [
-  {
-    question: "What is the capital of France?",
-    choices: ["Paris", "Madrid", "Rome", "Berlin"],
-    correct: 0
-  },
-  {
-    question: "Which planet is known as the Red Planet?",
-    choices: ["Earth", "Mars", "Venus"],
-    correct: 1
-  },
-  {
-    question: "What does CPU stand for?",
-    choices: ["Central Process Unit", "Central Processing Unit", "Computer Processing Utility"],
-    correct: 1
-  },
-  {
-    question: "2 + 2 × 2 = ?",
-    choices: ["6", "8", "4"],
-    correct: 0
-  }
+  { question: "What is the capital of France?", choices: ["Paris", "Madrid", "Rome", "Berlin"], correct: 0 },
+  { question: "Which planet is known as the Red Planet?", choices: ["Earth", "Mars", "Venus"], correct: 1 },
+  { question: "What does CPU stand for?", choices: ["Central Process Unit", "Central Processing Unit", "Computer Processing Utility"], correct: 1 },
+  { question: "2 + 2 × 2 = ?", choices: ["6", "8", "4"], correct: 0 }
 ];
 
 let current = 0;
@@ -61,28 +45,30 @@ function showQuestion() {
     const btn = document.createElement('button');
     btn.textContent = choice;
     btn.classList.add('choice');
-    btn.addEventListener('click', () => handleClick(btn, index));
+    btn.addEventListener('click', () => handleClick(index));
     choicesEl.appendChild(btn);
   });
 }
 
-function handleClick(button, index) {
+function handleClick(index) {
   const q = questions[current];
-  const buttons = choicesEl.querySelectorAll('.choice');
+  const buttons = choicesEl.querySelectorAll('button');
 
-  // Show feedback
+  // prevent multiple clicks
+  buttons.forEach(b => b.disabled = true);
+
+  // show feedback
   if (index === q.correct) {
-    button.classList.add('correct');
+    buttons[index].classList.add('correct');
     score++;
   } else {
-    button.classList.add('incorrect');
+    buttons[index].classList.add('incorrect');
     buttons[q.correct].classList.add('correct');
   }
 
-  // Disable all buttons to prevent double-clicks
-  buttons.forEach(b => b.disabled = true);
+  scoreEl.textContent = `Score: ${score}`;
 
-  // Wait 3 seconds then go to next question
+  // auto-advance after 3s
   setTimeout(() => {
     current++;
     if (current < questions.length) {
@@ -92,5 +78,5 @@ function handleClick(button, index) {
       endScreen.classList.remove('hidden');
       finalScoreEl.textContent = `You scored ${score} out of ${questions.length}`;
     }
-  }, 3000); // 3000ms = 3 seconds
+  }, 3000);
 }
