@@ -31,7 +31,6 @@ const startScreen = document.getElementById('start-screen');
 const quizScreen = document.getElementById('quiz-screen');
 const endScreen = document.getElementById('end-screen');
 
-const quizContainer = document.getElementById('quiz-container');
 const questionEl = document.getElementById('question');
 const choicesEl = document.getElementById('choices');
 const progressEl = document.getElementById('progress');
@@ -64,34 +63,30 @@ function showQuestion() {
     const btn = document.createElement('button');
     btn.textContent = choice;
     btn.classList.add('choice');
-    btn.onclick = () => handleAnswer(btn, index);
+
+    btn.addEventListener('click', () => {
+      if (!waitingForNext) {
+        // First click → show feedback
+        if (index === q.correct) {
+          btn.classList.add('correct');
+          score++;
+        } else {
+          btn.classList.add('incorrect');
+          // Highlight correct answer
+          choicesEl.children[q.correct].classList.add('correct');
+        }
+        waitingForNext = true;
+      } else {
+        // Second click → next question
+        nextQuestion();
+      }
+    });
+
     choicesEl.appendChild(btn);
   });
 }
 
-function handleAnswer(button, index) {
-  if (waitingForNext) return; // Ignore extra clicks here
-
-  const q = questions[current];
-  const buttons = document.querySelectorAll('.choice');
-
-  // Show feedback
-  buttons.forEach(b => b.disabled = true);
-  if (index === q.correct) {
-    button.classList.add('correct');
-    score++;
-  } else {
-    button.classList.add('incorrect');
-    buttons[q.correct].classList.add('correct');
-  }
-
-  waitingForNext = true;
-
-  // Listen for **any click anywhere in quiz-screen** to go to next
-  quizScreen.addEventListener('click', nextQuestionAfterClick, { once: true });
-}
-
-function nextQuestionAfterClick() {
+function nextQuestion() {
   current++;
   if (current < questions.length) {
     showQuestion();
