@@ -1,0 +1,73 @@
+:root {
+  --bg: #f9f9ff;
+  --card-bg: #ffffff;
+  --primary: #5865f2;
+  --primary-light: #d6dbff;
+  --correct: #4caf50;
+  --incorrect: #e53935;
+  --text: #222;
+  --muted: #666;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+body {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: var(--bg);
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#quiz-container {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 2.5rem;
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin: 0.6rem 0;
+  background: var(--primary-light);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+button:hover {
+  background: #c8ceff;
+  transform: translateY(-2px);
+}
+
+.choice.correct {
+  background: var(--correct) !important;
+  color: #fff !important;
+}
+
+.choice.incorrect {
+  background: var(--incorrect) !important;
+  color: #fff !important;
+}
+
+.hidden { display: none; }
+
+#progress, #score, #final-score {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
