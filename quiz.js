@@ -1,0 +1,85 @@
+let questions = [];
+let current = 0;
+let waitingForNext = false;
+let score = 0;
+
+const startBtn = document.getElementById('start-btn');
+const restartBtn = document.getElementById('restart-btn');
+const startScreen = document.getElementById('start-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const endScreen = document.getElementById('end-screen');
+
+const questionEl = document.getElementById('question');
+const choicesEl = document.getElementById('choices');
+const progressEl = document.getElementById('progress');
+const scoreEl = document.getElementById('score');
+const finalScoreEl = document.getElementById('final-score');
+
+startBtn.addEventListener('click', () => {
+  startScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  loadQuestions();
+});
+
+restartBtn.addEventListener('click', () => {
+  current = 0;
+  score = 0;
+  endScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  showQuestion();
+});
+
+// Load questions from JSON file
+async function loadQuestions() {
+  // You can replace this URL with your own JSON file in the repo
+  const res = await fetch('questions.json');
+  questions = await res.json();
+  showQuestion();
+}
+
+function showQuestion() {
+  waitingForNext = false;
+  const q = questions[current];
+  questionEl.textContent = q.question;
+  progressEl.textContent = `Question ${current + 1} of ${questions.length}`;
+  scoreEl.textContent = `Score: ${score}`;
+  choicesEl.innerHTML = '';
+
+  q.choices.forEach((choice, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = choice;
+    btn.classList.add('choice');
+    btn.onclick = () => handleAnswer(btn, index);
+    choicesEl.appendChild(btn);
+  });
+}
+
+function handleAnswer(button, index) {
+  const q = questions[current];
+  const buttons = document.querySelectorAll('.choice');
+
+  if (!waitingForNext) {
+    buttons.forEach(b => b.disabled = true);
+    if (index === q.correct) {
+      button.classList.add('correct');
+      score++;
+    } else {
+      button.classList.add('incorrect');
+      buttons[q.correct].classList.add('correct');
+    }
+    waitingForNext = true;
+  } else {
+    nextQuestion();
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    quizScreen.classList.add('hidden');
+    endScreen.classList.remove('hidden');
+    finalScoreEl.textContent = `You scored ${score} out of ${questions.length}`;
+  }
+}
