@@ -73,6 +73,7 @@ function handleAnswer(button, index) {
   const buttons = document.querySelectorAll('.choice');
 
   if (!waitingForNext) {
+    // First click → show feedback
     buttons.forEach(b => b.disabled = true);
     if (index === q.correct) {
       button.classList.add('correct');
@@ -82,9 +83,17 @@ function handleAnswer(button, index) {
       buttons[q.correct].classList.add('correct');
     }
     waitingForNext = true;
-  } else {
-    nextQuestion();
+
+    // Add event listeners to all buttons for moving to next
+    buttons.forEach(b => b.addEventListener('click', nextQuestionAfterClick));
   }
+}
+
+function nextQuestionAfterClick() {
+  const buttons = document.querySelectorAll('.choice');
+  // Remove the extra click listeners to avoid stacking
+  buttons.forEach(b => b.removeEventListener('click', nextQuestionAfterClick));
+  nextQuestion();
 }
 
 function nextQuestion() {
