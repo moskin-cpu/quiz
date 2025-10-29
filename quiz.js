@@ -22,7 +22,6 @@ let questions = [
 ];
 
 let current = 0;
-let state = 'firstClick'; // 'firstClick' = show feedback, 'secondClick' = move to next
 let score = 0;
 
 const startBtn = document.getElementById('start-btn');
@@ -46,14 +45,12 @@ startBtn.addEventListener('click', () => {
 restartBtn.addEventListener('click', () => {
   current = 0;
   score = 0;
-  state = 'firstClick';
   endScreen.classList.add('hidden');
   quizScreen.classList.remove('hidden');
   showQuestion();
 });
 
 function showQuestion() {
-  state = 'firstClick';
   const q = questions[current];
   questionEl.textContent = q.question;
   progressEl.textContent = `Question ${current + 1} of ${questions.length}`;
@@ -73,18 +70,20 @@ function handleClick(button, index) {
   const q = questions[current];
   const buttons = choicesEl.querySelectorAll('.choice');
 
-  if (state === 'firstClick') {
-    // Show feedback
-    if (index === q.correct) {
-      button.classList.add('correct');
-      score++;
-    } else {
-      button.classList.add('incorrect');
-      buttons[q.correct].classList.add('correct');
-    }
-    state = 'secondClick';
-  } else if (state === 'secondClick') {
-    // Move to next question
+  // Show feedback
+  if (index === q.correct) {
+    button.classList.add('correct');
+    score++;
+  } else {
+    button.classList.add('incorrect');
+    buttons[q.correct].classList.add('correct');
+  }
+
+  // Disable all buttons to prevent double-clicks
+  buttons.forEach(b => b.disabled = true);
+
+  // Wait 3 seconds then go to next question
+  setTimeout(() => {
     current++;
     if (current < questions.length) {
       showQuestion();
@@ -93,5 +92,5 @@ function handleClick(button, index) {
       endScreen.classList.remove('hidden');
       finalScoreEl.textContent = `You scored ${score} out of ${questions.length}`;
     }
-  }
+  }, 3000); // 3000ms = 3 seconds
 }
